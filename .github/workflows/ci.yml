@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install test deps for report
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r currency-report/requirements.txt
+          pip install pytest
+
+      - name: Run tests (report)
+        run: |
+          cd currency-report
+          pytest -q tests/
+
+      - name: Install test deps for history
+        run: |
+          pip install -r currency-history/requirements.txt
+
+      - name: Run tests (history)
+        run: |
+          cd currency-history
+          pytest -q tests/
+
+      - name: Docker Build (report)
+        run: |
+          docker build -t currency-report:ci ./currency-report
+
+      - name: Docker Build (history)
+        run: |
+          docker build -t currency-history:ci ./currency-history
+
+      # Nota: se você publicar imagens, adicione passo de login no registry e push
+

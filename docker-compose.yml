@@ -1,0 +1,29 @@
+services:
+  currency-report:
+    build: ./currency-report
+    container_name: currency-report
+    environment:
+      - SERVICE_PORT=8100
+      - SERVICE_HOST=currency-report
+    
+    ports:
+      - "8100:8100"
+    networks:
+      - micro-net
+
+  currency-history:
+    build: ./currency-history
+    container_name: currency-history
+    environment:
+      - SERVICE_PORT=8101
+      - SERVICE_HOST=currency-history
+     
+    ports:
+      - "8101:8101"
+    networks:
+      - micro-net
+
+networks:
+  micro-net:
+    driver: bridge
+
